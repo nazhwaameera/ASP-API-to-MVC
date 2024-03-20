@@ -1,68 +1,128 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Mvc;
-using MyWebFormApp.BLL.DTOs;
-using MyWebFormApp.BLL.Interfaces;
+using APISolution.BLL.DTOs;
+using APISolution.BLL.Interfaces;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace APISolution.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CategoriesController : ControllerBase
-    {
-        private readonly ICategoryBLL _categoryBLL;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class CategoriesController : ControllerBase
+	{
+		private readonly ICategoryBLL _categoryBLL;
 
-        public CategoriesController(ICategoryBLL categoryBLL)
-        {
-            _categoryBLL = categoryBLL;
-        }
-        // GET: api/<CategoriesController>
-        [HttpGet]
-        public IEnumerable<CategoryDTO> Get()
-        {
-            return _categoryBLL.GetAll();
-        }
+		public CategoriesController(ICategoryBLL categoryBLL)
+		{
+			_categoryBLL = categoryBLL;
+		}
+		[HttpGet]
+		public async Task<IEnumerable<CategoryDTO>> Get()
+		{
+			var results = await _categoryBLL.GetAll();
+			return results;
+		}
 
-        // GET api/<CategoriesController>/5
-        [HttpGet("{id}")]
-        public CategoryDTO Get(int id)
-        {
-            return _categoryBLL.GetById(id);
-        }
+		[HttpGet("{id}")]
+		public async Task<ActionResult<CategoryDTO>> GetById(int id)
+		{
+			var result = await _categoryBLL.GetById(id);
+			if (result == null)
+			{
+				return NotFound();
+			}
+			return Ok(result);
+		}
 
-        // POST api/<CategoriesController>
-        [HttpPost]
-        public IActionResult Post(CategoryCreateDTO category)
-        {
-            _categoryBLL.Insert(category);
-            // Assuming Insert method returns successfully without throwing an exception
-            return Ok(new { message = "Category created successfully" });
-        }
+		[HttpGet("/api/Categories/byname/{name}")]
+		public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetByName(string name)
+		{
+			var result = await _categoryBLL.GetByName(name);
+			if (result == null)
+			{
+				return NotFound();
+			}
+			return Ok(result);
+		}
 
-        // PUT api/<CategoriesController>/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, CategoryUpdateDTO category)
-        {
-            var result = _categoryBLL.GetById(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            _categoryBLL.Update(category);
-            return Ok($"Data Category ID: {id} berhasil diupdate");
-        }
+		[HttpPost]
+		public async Task<ActionResult<CategoryDTO>> Post(CategoryCreateDTO categoryCreateDTO)
+		{
+			if (categoryCreateDTO == null)
+			{
+				return BadRequest();
+			}
 
-        // DELETE api/<CategoriesController>/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var result = _categoryBLL.GetById(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
-            _categoryBLL.Delete(id);
-            return Ok($"Data Category ID: {id} berhasil didelete");
-        }
-    }
+			try
+			{
+				var data = _categoryBLL.Insert(categoryCreateDTO);
+				return Ok(new { Message = "Insert data success", Result = data });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpPut("{id}")]
+		public async Task<ActionResult<CategoryDTO>> Put(int id, CategoryUpdateDTO categoryUpdateDTO)
+		{
+			try
+			{
+				var oldData = await _categoryBLL.GetById(id);
+				if (oldData == null)
+				{
+					return NotFound();
+				}
+				var data = await _categoryBLL.Update(categoryUpdateDTO);
+				return Ok(new { Message = "Update data success", Result = data });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+			}
+
+		[HttpDelete("{id}")]
+		public async Task<ActionResult<bool>> Delete(int id)
+		{
+			if (_categoryBLL.GetById(id) == null)
+			{
+				return NotFound();
+			}
+
+			try
+			{
+				_categoryBLL.Delete(id);
+				return Ok("Delete data success");
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet("/api/Categories/paging/byname")]
+		public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetWithPaging([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string name)
+		{
+			var result = await _categoryBLL.GetWithPaging(pageNumber, pageSize, name);
+			if (result == null)
+			{
+				return NotFound();
+			}
+			return Ok(result);
+		}
+
+		[HttpGet("/api/Categories/count/{name}")]
+		public async Task<ActionResult<int>> GetCountCategories(string name)
+		{
+			var result = await _categoryBLL.GetCountCategories(name);
+			if (result == 0)
+			{
+				return NotFound();
+			}
+			return Ok(result);
+		}
+
+	}
 }
