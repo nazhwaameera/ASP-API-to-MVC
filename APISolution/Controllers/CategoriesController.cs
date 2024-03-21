@@ -55,8 +55,7 @@ namespace APISolution.Controllers
 
 			try
 			{
-				var data = _categoryBLL.Insert(categoryCreateDTO);
-				return Ok(new { Message = "Insert data success", Result = data });
+				return await _categoryBLL.Insert(categoryCreateDTO);
 			}
 			catch (Exception ex)
 			{
@@ -86,14 +85,14 @@ namespace APISolution.Controllers
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<bool>> Delete(int id)
 		{
-			if (_categoryBLL.GetById(id) == null)
+			if (await _categoryBLL.GetById(id) == null)
 			{
 				return NotFound();
 			}
 
 			try
 			{
-				_categoryBLL.Delete(id);
+				await _categoryBLL.Delete(id);
 				return Ok("Delete data success");
 			}
 			catch (Exception ex)
@@ -103,7 +102,7 @@ namespace APISolution.Controllers
 		}
 
 		[HttpGet("/api/Categories/paging/byname")]
-		public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetWithPaging([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string name)
+		public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetWithPaging([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string name = "")
 		{
 			var result = await _categoryBLL.GetWithPaging(pageNumber, pageSize, name);
 			if (result == null)
@@ -114,7 +113,7 @@ namespace APISolution.Controllers
 		}
 
 		[HttpGet("/api/Categories/count/{name}")]
-		public async Task<ActionResult<int>> GetCountCategories(string name)
+		public async Task<ActionResult<int>> GetCountCategories(string name = "")
 		{
 			var result = await _categoryBLL.GetCountCategories(name);
 			if (result == 0)

@@ -10,7 +10,7 @@ namespace APISolution.BLL.DTOs
 
         public string Details { get; set; }
 
-        public bool IsApproved { get; set; }
+        public bool? IsApproved { get; set; }
 
         public string Pic { get; set; }
     }

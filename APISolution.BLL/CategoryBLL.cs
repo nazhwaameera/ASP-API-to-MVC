@@ -16,9 +16,9 @@ namespace APISolution.BLL
 			_categoryData = categoryData;
 			_mapper = mapper;
 		}
-		public Task<bool> Delete(int id)
+		public async Task<bool> Delete(int id)
 		{
-			var result = _categoryData.Delete(id);
+			var result = await _categoryData.Delete(id);
 			return result;
 		}
 

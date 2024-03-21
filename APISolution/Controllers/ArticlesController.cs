@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using APISolution.BLL.DTOs;
 using APISolution.BLL.Interfaces;
+using FluentValidation;
+using APISolution.Models;
 
 namespace APISolution.Controllers
 {
@@ -10,10 +12,17 @@ namespace APISolution.Controllers
 	public class ArticlesController : ControllerBase
 	{
 		private readonly IArticleBLL _articleBLL;
-		public ArticlesController(IArticleBLL articleBLL)
+		private readonly IValidator<ArticleCreateDTO> _validatorArticleCreateDto;
+		private readonly IValidator<ArticleUpdateDTO> _validatorArticleUpdateDTO;
+
+		public ArticlesController(IArticleBLL articleBLL, IValidator<ArticleCreateDTO> validatorArticleCreateDto,
+			IValidator<ArticleUpdateDTO> validatorArticleUpdateDTO)
 		{
 			_articleBLL = articleBLL;
+			_validatorArticleCreateDto = validatorArticleCreateDto;
+			_validatorArticleUpdateDTO = validatorArticleUpdateDTO;
 		}
+
 		[HttpGet]
 		public async Task<IEnumerable<ArticleDTO>> Get()
 		{
@@ -57,6 +66,34 @@ namespace APISolution.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
 			}
 		}
+		[HttpPost("upload")]
+		public async Task<IActionResult> Post([FromForm] ArticleWithFile articleWithFile)
+		{
+			if (articleWithFile.file == null || articleWithFile.file.Length == 0)
+			{
+				return BadRequest("File is required");
+			}
+			var newName = $"{Guid.NewGuid()}_{articleWithFile.file.FileName}";
+			var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", newName);
+			using (var stream = new FileStream(path, FileMode.Create))
+			{
+				await articleWithFile.file.CopyToAsync(stream);
+			}
+
+			var articleCreateDTO = new ArticleCreateDTO
+			{
+				CategoryID = articleWithFile.CategoryId,
+				Title = articleWithFile.Title,
+				Details = articleWithFile.Details,
+				IsApproved = articleWithFile.IsApproved,
+				Pic = newName
+			};
+
+			var article = await _articleBLL.Insert(articleCreateDTO);
+
+			return CreatedAtAction(nameof(Get), new { id = article.ArticleID }, article);
+		}
+
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<bool>> Delete(int id)
 		{
