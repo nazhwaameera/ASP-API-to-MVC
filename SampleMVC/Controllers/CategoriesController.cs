@@ -7,7 +7,7 @@ using SampleMVC.ViewModels;
 namespace SampleMVC.Controllers;
 
 
-//[Authorize(Roles = "admin,contributor")]
+[Authorize(Roles = "admin,contributor")]
 public class CategoriesController : Controller
 {
 	private readonly ICategoryServices _categoryServices;

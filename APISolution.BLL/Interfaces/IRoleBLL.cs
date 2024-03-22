@@ -5,8 +5,11 @@ namespace APISolution.BLL.Interfaces
 {
     public interface IRoleBLL
     {
-        IEnumerable<RoleDTO> GetAllRoles();
-        void AddRole(string roleName);
-        void AddUserToRole(string username, int roleId);
+        Task<IEnumerable<RoleDTO>> GetAll();
+        Task<RoleDTO> GetById(int id);
+        Task<RoleDTO> Insert(RoleDTO entity);
+        Task<RoleDTO> Update(RoleDTO entity);
+        Task<bool> Delete(int id);
+        Task<Task> AddUserToRole(string username, int roleId);
     }
 }

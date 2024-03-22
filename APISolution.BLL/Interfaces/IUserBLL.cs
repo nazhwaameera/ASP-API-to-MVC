@@ -5,15 +5,13 @@ namespace APISolution.BLL.Interfaces
 {
     public interface IUserBLL
     {
-        void ChangePassword(string username, string newPassword);
-        void Delete(string username);
-        IEnumerable<UserDTO> GetAll();
-        UserDTO GetByUsername(string username);
-        void Insert(UserCreateDTO entity);
-        UserDTO Login(string username, string password);
-        UserDTO LoginMVC(LoginDTO loginDTO);
-
-        UserDTO GetUserWithRoles(string username);
-        IEnumerable<UserDTO> GetAllWithRoles();
+        Task<Task> ChangePassword(string username, string newPassword);
+        Task<IEnumerable<UserDTO>> GetAll();
+        Task<UserDTO> GetByUsername(string username);
+        Task<UserDTO> Insert(UserCreateDTO entity);
+        Task<UserDTO> Update(UserDTO entity);
+        Task<UserDTO> Login(LoginDTO loginDTO);
+        Task<UserDTO> GetUserWithRoles(string username);
+        Task<IEnumerable<UserDTO>> GetAllWithRoles();
     }
 }

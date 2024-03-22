@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using APISolution.BLL.DTOs;
 using APISolution.BLL.Interfaces;
@@ -12,18 +13,23 @@ namespace APISolution.Controllers
 	{
 		private readonly ICategoryBLL _categoryBLL;
 
-		public CategoriesController(ICategoryBLL categoryBLL)
+        // Parse the roles from the login result
+        var roles = user.Roles.Select(r => r.RoleName).ToList();
+
+        public CategoriesController(ICategoryBLL categoryBLL)
 		{
 			_categoryBLL = categoryBLL;
 		}
-		[HttpGet]
+        [Authorize(Roles = "admin,contributor,reader")]
+        [HttpGet]
 		public async Task<IEnumerable<CategoryDTO>> Get()
 		{
 			var results = await _categoryBLL.GetAll();
 			return results;
 		}
 
-		[HttpGet("{id}")]
+        [Authorize(Roles = "admin,contributor,reader")]
+        [HttpGet("{id}")]
 		public async Task<ActionResult<CategoryDTO>> GetById(int id)
 		{
 			var result = await _categoryBLL.GetById(id);
@@ -34,7 +40,8 @@ namespace APISolution.Controllers
 			return Ok(result);
 		}
 
-		[HttpGet("/api/Categories/byname/{name}")]
+        [Authorize(Roles = "admin,contributor,reader")]
+        [HttpGet("/api/Categories/byname/{name}")]
 		public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetByName(string name)
 		{
 			var result = await _categoryBLL.GetByName(name);
@@ -45,7 +52,8 @@ namespace APISolution.Controllers
 			return Ok(result);
 		}
 
-		[HttpPost]
+        [Authorize(Roles = "admin,contributor")]
+        [HttpPost]
 		public async Task<ActionResult<CategoryDTO>> Post(CategoryCreateDTO categoryCreateDTO)
 		{
 			if (categoryCreateDTO == null)
@@ -63,7 +71,8 @@ namespace APISolution.Controllers
 			}
 		}
 
-		[HttpPut("{id}")]
+        [Authorize(Roles = "contributor")]
+        [HttpPut("{id}")]
 		public async Task<ActionResult<CategoryDTO>> Put(int id, CategoryUpdateDTO categoryUpdateDTO)
 		{
 			try
@@ -82,7 +91,8 @@ namespace APISolution.Controllers
 			}
 			}
 
-		[HttpDelete("{id}")]
+        [Authorize(Roles = "admin,contributor")]
+        [HttpDelete("{id}")]
 		public async Task<ActionResult<bool>> Delete(int id)
 		{
 			if (await _categoryBLL.GetById(id) == null)
@@ -101,7 +111,8 @@ namespace APISolution.Controllers
 			}
 		}
 
-		[HttpGet("/api/Categories/paging/byname")]
+        [Authorize(Roles = "admin,contributor,reader")]
+        [HttpGet("/api/Categories/paging/byname")]
 		public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetWithPaging([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string name = "")
 		{
 			var result = await _categoryBLL.GetWithPaging(pageNumber, pageSize, name);
@@ -112,7 +123,8 @@ namespace APISolution.Controllers
 			return Ok(result);
 		}
 
-		[HttpGet("/api/Categories/count/")]
+        [Authorize(Roles = "admin,contributor,reader")]
+        [HttpGet("/api/Categories/count/")]
 		public async Task<ActionResult<int>> GetCountCategories([FromQuery] string name = "")
 		{
 			var result = await _categoryBLL.GetCountCategories(name);

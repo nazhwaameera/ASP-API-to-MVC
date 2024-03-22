@@ -11,11 +11,16 @@ namespace APISolution.BLL.Profiles
 			CreateMap<Article, ArticleDTO>().ReverseMap();
 			CreateMap<ArticleCreateDTO, Article>();
 			CreateMap<ArticleUpdateDTO, Article>();
+
 			CreateMap<Category, CategoryDTO>().ReverseMap();
 			CreateMap<CategoryCreateDTO, Category>();
 			CreateMap<CategoryUpdateDTO, Category>();
+
 			CreateMap<Role, RoleDTO>().ReverseMap();
 			CreateMap<RoleCreateDTO, Role>();
-		}
+
+            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<UserCreateDTO, User>();
+        }
 	}
 }
