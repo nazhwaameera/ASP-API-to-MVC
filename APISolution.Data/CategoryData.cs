@@ -85,7 +85,7 @@ namespace APISolution.Data
 
 		}
 
-		public async Task<IEnumerable<Category>> GetWithPaging(int pageNumber, int pageSize, string name)
+		public async Task<IEnumerable<Category>> GetWithPaging(int pageNumber, int pageSize, string name = "")
 		{
 			try
 			{

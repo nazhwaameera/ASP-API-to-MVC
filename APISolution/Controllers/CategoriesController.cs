@@ -112,8 +112,8 @@ namespace APISolution.Controllers
 			return Ok(result);
 		}
 
-		[HttpGet("/api/Categories/count/{name}")]
-		public async Task<ActionResult<int>> GetCountCategories(string name = "")
+		[HttpGet("/api/Categories/count/")]
+		public async Task<ActionResult<int>> GetCountCategories([FromQuery] string name = "")
 		{
 			var result = await _categoryBLL.GetCountCategories(name);
 			if (result == 0)

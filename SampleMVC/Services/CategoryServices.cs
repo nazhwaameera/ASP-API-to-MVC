@@ -128,7 +128,7 @@ namespace SampleMVC.Services
 
 		public async Task<int> GetCountCategories(string name = "")
 		{
-			var httpResponse = await _client.GetAsync($"{GetBaseUrl()}/count/{name}");
+			var httpResponse = await _client.GetAsync($"{GetBaseUrl()}/count?name={name}");
             var content = await httpResponse.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<int>(content, new JsonSerializerOptions
             {

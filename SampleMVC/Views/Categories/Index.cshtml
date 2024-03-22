@@ -1,5 +1,5 @@
 ﻿@using Newtonsoft.Json
-@model IEnumerable<MyWebFormApp.BLL.DTOs.CategoryDTO>
+@model SampleMVC.ViewModels.CategoriesViewModel
 @{
     int pageNumber = 0;
     if(ViewData["pageNumber"] != null)
@@ -60,7 +60,7 @@
                             }
                         }
                     </tr>
-                    @foreach (var category in Model)
+                    @foreach (var category in Model.Categories)
                     {
                         <tr>
                             <td>@category.CategoryID</td>

@@ -41,23 +41,23 @@ public class CategoriesController : Controller
         }*/
 
 
-		//	if (TempData["message"] != null)
-		//	{
-		//		ViewData["message"] = TempData["message"];
-		//	}
+		if (TempData["message"] != null)
+		{
+			ViewData["message"] = TempData["message"];
+		}
 
-		//	ViewData["search"] = search;
+		ViewData["search"] = search;
 
-		//	CategoriesViewModel categoriesViewModel = new CategoriesViewModel()
-		//	{
-		//		Categories = _categoryBLL.GetWithPaging(pageNumber, pageSize, search)
-		//	};
+		CategoriesViewModel categoriesViewModel = new CategoriesViewModel()
+		{
+			Categories = await _categoryServices.GetWithPaging(pageNumber, pageSize, search)
+		};
 
 		//	//var models = _categoryBLL.GetWithPaging(pageNumber, pageSize, search);
-		var maxsize = _categoryServices.GetCountCategories(search);
-		//return Content($"{pageNumber} - {pageSize} - {search} - {act}");
-
-		if (act == "next")
+		var maxsize = await _categoryServices.GetCountCategories(search);
+        //return Content($"{pageNumber} - {pageSize} - {search} - {act}");
+      
+        if (act == "next")
 		{
 			if (pageNumber * pageSize < maxsize)
 			{
@@ -79,20 +79,8 @@ public class CategoriesController : Controller
 		}
 
 		ViewData["pageSize"] = pageSize;
-		//ViewData["action"] = action;
-		var categories = await _categoryServices.GetWithPaging(pageNumber, pageSize, search);
-        List<Category> categoriesList = new List<Category>();
-        foreach (var category in categories)
-        {
-            categoriesList.Add(new Category
-            {
-                categoryID = category.CategoryID,
-                categoryName = category.CategoryName
-            });
-        }
-        return View(categoriesList);
-
-        return View();
+		
+        return View(categoriesViewModel);
 	}
 
 
