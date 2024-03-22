@@ -47,7 +47,7 @@ namespace SampleMVC.Services
         public async Task<IEnumerable<CategoryDTO>> GetWithPaging(int pageNumber, int pageSize, string name = "")
         {
             _logger.LogInformation(GetBaseUrl());
-            var httpResponse = await _client.GetAsync($"{GetBaseUrl()}/paging/byname");
+            var httpResponse = await _client.GetAsync($"{GetBaseUrl()}/paging/byname?pageNumber={pageNumber}&pageSize={pageSize}&name={name}");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
